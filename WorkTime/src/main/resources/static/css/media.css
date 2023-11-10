@@ -1,0 +1,28 @@
+@media screen and (max-width: 767px){
+    header .head-cont{
+        padding:10px;
+    }
+
+    .scroll, .sub-depth{
+        white-space: nowrap;
+        overflow-x: scroll;
+        padding:0 !important;        
+    } 
+    
+    .scroll ul,
+    .sub-depth ul{
+        display: block;
+    }
+    .scroll ul li,
+    .sub-depth ul li{
+        display: inline-block;
+        flex: 1;
+    }
+    .scroll::-webkit-scrollbar,
+    .sub-depth::-webkit-scrollbar{        display: none;
+    }
+    .contents{
+        position: relative;
+        padding:1rem;
+    }
+}

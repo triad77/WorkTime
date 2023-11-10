@@ -1,0 +1,91 @@
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+
+<button id="reset" onclick="resetting()">초기화</button>
+
+<script>
+  
+    // SESSION ID 를 생성해주는 함수다.
+    const generateRandomString = (num) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let result = '';
+        const charactersLength = characters.length;
+        for (let i = 0; i < num; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+	
+    let randomChar = generateRandomString(10)// sessionId 생성
+    console.log(randomChar)
+    let eventSource = new EventSource(`http://localhost:8080/sseConnect?sessionId=${randomChar}`);
+
+	//만든 sessionId 로 최초 요청을 보낸다.	
+    
+    // 서버에서 보낸 SSE message의 name으로 각각 함수를 설정해 주었다.  -->
+    
+    //CONNECT 인경우-->
+    eventSource.addEventListener('connect',(e) => {
+      console.log(e.data)
+     //데이터 출력
+      fetch(`http://localhost:80/api/v1/qrcode-req/ping?sessionId=${randomChar}`)
+    .then(
+              (response) => console.log(response)
+      )
+    //핑을 체크하는 엔드포인트를 호출한다.
+    })
+    
+    //ping 인 경우-->
+    eventSource.addEventListener('ping',(e) => {
+      console.log(e.data)
+     //데이터를 출력한다
+    })
+    
+    //FAIL인 경우-->
+    eventSource.addEventListener('FAIL',(e) => {
+        console.log(e.data)
+        eventSource.close();
+    //SSE 통신을 종료시킨다.
+    })
+    
+    //COMPLETE 인 경우-->
+    eventSource.addEventListener('COMPLETE',(e) => {
+      console.log(e.data)
+     //TODO: 토큰으로 로그인하는 로직이 필요하다.
+      eventSource.close();
+    //SSE 통신을 종료시킨다.
+    })
+
+    
+    //초기화 시켰을경우-->
+    function resetting() {
+        console.log("close");
+        eventSource.close();
+        randomChar = generateRandomString(10)
+        eventSource = new EventSource(`http://localhost:80/api/v1/qrcode-req?sessionId=${randomChar}`)
+
+      eventSource.addEventListener('CONNECT',(e) => {
+        console.log(e.data)
+        fetch(`http://localhost:80/api/v1/qrcode-req/ping?sessionId=${randomChar}`).then(
+                (response) => console.log(response)
+        )
+      })
+      eventSource.addEventListener('ping',(e) => {
+        console.log(e.data)
+      })
+        eventSource.addEventListener('FAIL',(e) => {
+            console.log(e.data)
+            eventSource.close();
+        })
+      eventSource.addEventListener('COMPLETE',(e) => {
+        console.log(e.data)
+        eventSource.close();
+        // 토큰을 받고 홈페이지로 리다이렉트
+      })
+    }
+</script>
+</body>
+</html>

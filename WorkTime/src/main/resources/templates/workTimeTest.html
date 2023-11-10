@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <!-- work time CSS -->
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    
+    <title>출퇴근 등록 TEST</title>
+</head>
+<body>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<div class="container my-3">
+
+	<section class="sect">
+		<div class="sub-title-wrap d-flex justify-content-center">
+			<h3 class="sub-title mb-20">출퇴근 등록 TEST</h3>
+		</div>
+		<div class="mb-3 d-flex justify-content-center">
+			<select id="empNo" class="form-select w-auto" aria-label="등록직원 선택">
+                <option 
+                  th:each="emp : ${empSelCtnt}" 
+                  th:value="${emp.empNo}" 
+                  th:text="${emp.empNm}"></option>
+			</select>
+			&nbsp;&nbsp;&nbsp;
+			<a class="btn btn-primary btn-md active" role="button" aria-pressed="true" onclick="goRegist()">출근등록</a>
+		</div>
+	</section>
+                
+</div>
+
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+
+<script>
+	function goRegist() {
+		location.href="/workTimeForm?empNo="+document.getElementById("empNo").value;
+	}
+</script>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>

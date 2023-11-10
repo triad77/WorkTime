@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ADMIN :: KBDS 출퇴근관리</title>
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/media.css}">
+  <!-- // styles -->
+
+  <!-- script -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script th:src="@{/js/ui.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/datepicker.js}"></script>
+  <script th:src="@{/js/d3-5.8.2.min.js}"></script>
+  <script th:src="@{/js/c3.min.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+
+<body>
+
+  <!-- body -->
+  <div id="wrap">
+
+    <!-- header -->
+    <header class="">
+      <div class="navbar sticky-top head-cont d-flex justify-content-between align-items-center">
+        <h1><a href="/webadmin/page/sub_01_01.html" title="클릭시 home으로 이동">KBDS WORKTIME</a></h1>
+        <ul class="nav">
+          <li class="nav-item"><!--<a href="/webadmin/page/sub_08_03.html" class="nav-link">비밀번호변경</a>--></li>
+          <li class="nav-item"><!--<a href="/webadmin/index.html" class="nav-link">로그아웃</a>--></li>
+        </ul>
+      </div>
+
+      <nav id="gnb" class="gnb scroll">
+        <ul class="nav">
+          <li class="nav-item"><a href="/admin/search/byProject" class="nav-link active">프로젝트별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byCorp" class="nav-link">소속회사별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byEmp" class="nav-link">직원별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/manage/emp" class="nav-link">시스템관리</a></li>
+        </ul>
+      </nav>
+      
+    </header> 
+    <!-- // header -->
+
+    <!-- contents -->
+    <div class="contents">
+      <!-- page title -->
+      <div class="page-title d-flex justify-content-between align-items-end">
+        <h2 class="title">프로젝트별 출퇴근현황 조회</h2>
+        <nav class="breadcrumb-wrap" aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><i class="bi bi-house me-1"></i>Home</li>
+              <li class="breadcrumb-item active" aria-current="page">프로젝트별 출퇴근현황 조회</li>
+            </ol>
+        </nav>
+      </div> <!-- // page title -->
+      <div class="page-section">
+        <section class="sect">
+          <div class="search-wrap">
+          <!-- filter -->
+          <div class="filter-wrap d-flex align-items-end mb-2">
+            <div class="input-group input-group-sm w-auto">
+              <h3 class="h3-title"><i class="bi bi-search me-1"></i>조회</h3>
+            </div>
+            <div class="btn-wrap mt-4 d-flex ms-auto">
+			   <button id="btnSearch" class="btn btn-dark">조회</button>
+            </div>
+          </div>
+          <!-- // filter -->
+            <div class="table-responsive">
+            <table class="table row-table">
+              <colgroup>
+                <col style="width:15%">
+                <col>
+                <col style="width:15%">
+                <col>
+              </colgroup>
+              <tbody>
+                <tr>
+                  <th scope="row">프로젝트</th>
+                  <td>
+					<div class="d-flex align-items-center">  
+						<select id="plodrCorp" class="form-select w-auto" aria-label="발주회사 선택" onchange="getProject(plodrCorp.value, project)">
+							<option value="00">전체</option>
+	                        <option 
+	                          th:each="corp : ${pCorpSelBox}" 
+	                          th:value="${corp.code}" 
+	                          th:text="${corp.value}"
+	                          th:selected="${corp.code} == ${pCorpSel}"></option>
+						</select>
+						<select id="project" class="form-select w-auto" aria-label="프로젝트 선택">
+              				<option value="0">전체</option>
+	                        <option 
+	                          th:each="prj : ${prjSelBox}" 
+	                          th:value="${prj.prjId}" 
+	                          th:text="${prj.prjNm}"
+	                          th:selected="${prj.prjId} == ${prjSel}"></option>
+						</select>
+					</div>
+                  </td>
+                  <th scope="row">조회일자</th>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="datepicker">
+                        <input id="srchYmd" type="text" class="form-control" th:value="${#temporals.createDate(srchYmd, 'yyyyMMdd')}">
+                        <i class="bi bi-calendar2-check"></i>
+                      </div>
+                    </div>                 
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          </div>
+        </section>
+        <section class="sect">
+
+          <!-- filter -->
+          <div class="filter-wrap d-flex align-items-center mb-2">
+            <div class="input-group input-group-sm w-auto">
+              <h3 class="h3-title"><i class="bi bi-card-list me-1"></i>목록</h3>
+            </div>
+            <div class="buttons d-flex ms-auto">
+              <button type="button" class="btn btn-sm btn-secondary"><i class="bi bi-download me-1"></i>엑셀다운로드</button>
+            </div>
+          </div> <!-- // filter -->
+
+          <!-- table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center col-table">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">번호</th>
+                  <th scope="col">일자</th>
+                  <th scope="col">프로젝트</th>
+                  <th scope="col">총인원</th>
+                  <th scope="col">등록자</th>
+                  <th scope="col">지각자</th>
+                  <th scope="col">미등록자</th>
+                </tr>
+              </thead>
+              
+              <tbody>
+                <tr th:each="dto, loop : ${paging}">
+                  <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+                  <td th:text="${#temporals.createDate(dto.dateYmd, 'yyyyMMdd')}"></td>
+                  <td th:text="${dto.prjNm}"></td>
+                  <td th:if="${dto.totalCnt} != 0"><a class="link-dark" th:attr="onclick=|modalPopupShow('T','${#temporals.createDate(dto.dateYmd, 'yyyyMMdd')}','${dto.prjId}')|" th:text="${dto.totalCnt}">총인원</a></td>
+                  <td th:unless="${dto.totalCnt} != 0">0</td>
+                  <td th:if="${dto.registCnt} != 0"><a class="link-dark" th:attr="onclick=|modalPopupShow('R','${#temporals.createDate(dto.dateYmd, 'yyyyMMdd')}','${dto.prjId}')|" th:text="${dto.registCnt}">등록자</a></td>
+                  <td th:unless="${dto.registCnt} != 0">0</td>
+                  <td th:if="${dto.lateCnt} != 0"><a class="link-dark" th:attr="onclick=|modalPopupShow('L','${#temporals.createDate(dto.dateYmd, 'yyyyMMdd')}','${dto.prjId}')|" th:text="${dto.lateCnt}">지각자</a></td>
+                  <td th:unless="${dto.lateCnt} != 0">0</td>
+                  <td th:if="${dto.noRegistCnt} != 0"><a class="link-dark" th:attr="onclick=|modalPopupShow('N','${#temporals.createDate(dto.dateYmd, 'yyyyMMdd')}','${dto.prjId}')|" th:text="${dto.noRegistCnt}">미등록자</a></td>
+                  <td th:unless="${dto.noRegistCnt} != 0">0</td>
+              </tbody>
+
+            </table>
+          </div> <!-- // table -->
+
+          <!-- 페이징처리 시작 -->
+          <div th:if="${!paging.isEmpty()}">
+          <nav class="pagination-wrap" aria-label="리스트 페이지 이동">
+            <ul class="pagination justify-content-center">
+
+              <!-- 이전 없을 때 .disabled -->
+              <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number-1}|}" aria-label="이전 페이지">
+                  <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                </a>
+              </li>
+
+              <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+	            	th:if="${page >= paging.number-5 and page <= paging.number+5}"
+	                th:classappend="${page == paging.number} ? 'active'" 
+	                class="page-item">
+	                <a th:text="${page+1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+	            </li>
+
+              <!-- 다음 없을 때 .disabled -->
+              <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number+1}|}" aria-label="다음 페이지">
+                  <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                </a>
+              </li>
+
+            </ul>
+          </nav>
+
+          </div> 
+          <!-- 페이징처리 끝 --> 
+        </section>
+      </div>
+    </div> <!-- // contents -->
+  </div> <!-- // body -->
+
+
+
+  <!-- modal-dialog-scrollable -->
+  <!-- test -->
+  <div class="modal" id="modalPopup">
+    <div class="modal-dialog modal-xl ">
+      <div class="modal-content" id="modalPopupContent">
+		  
+      </div>
+    </div>
+  </div>
+
+<script>
+	$( function() {
+		$( "#srchYmd" ).datepicker();
+	} );
+	
+	$("#btnSearch").on("click", function() {
+
+		var srchUrl  = "/admin/search/byProject?";
+	    srchUrl += "plodrCorp="+$("#plodrCorp").val()+"&";
+	    srchUrl += "project="+$("#project").val()+"&";
+	    srchUrl += "srchYmd="+$("#srchYmd").val().replace(/-/gi, "");
+		
+		location.href=srchUrl;
+	});
+	
+	function getProject(plodrCorp, selectOption) {
+		$.ajax({
+			type: 'GET',
+			url: '/admin/getProject/' + plodrCorp,
+			contentType: "application/json; charset=UTF-8",
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+				$('#project').children('option:not(:first)').remove();
+				for (i = 0; i < result.length; i++) {
+					// 첫번째 옵션 '전체'를 삭제하면 안되므로
+					selectOption.options[i+1] = new Option(result[i].name, result[i].code);
+				}
+			}
+		}).fail(function (error) {
+			alert(JSON.stringify(error));
+		})
+	}
+	
+	function modalPopupShow(listGbn, srchYmd, prjId) {
+		
+		$.ajax({
+			type : 'POST',
+			url : '/admin/getEmpWorkTimeList',
+			data : {
+				listGbn : listGbn,
+				srchYmd : srchYmd.replace(/-/gi, ""),
+				prjId : prjId,
+				corpCd : ""
+			},
+			dataType : 'json',
+			success : function(data){
+				console.log("성공");
+				console.log(data);
+				
+				//화면에 표시되는 타이틀 변경
+				//$('#title').text(data.title);
+				
+				console.log(data.title);
+				var title = data.title;
+				
+				console.log(data.list);
+				var list = data.list;
+				
+				console.log(list.length);
+				var popupCtntHtml = "<div class=\"modal-header\">"+
+										"<h4 class=\"modal-title\">" + title + "</h4>"+
+										"<button type=\"button\" class=\"btn-close\" data-bs-dismiss=\"modal\"></button>"+
+									"</div>"+
+									"<div class=\"modal-body\">"+
+									"<table class=\"table table-bordered table-hover text-center col-table\">"+
+									"<thead class=\"table-light\">"+
+									"<tr>"+
+										"<th scope=\"col\" style=\"width: 20%\">소속회사</th>"+
+										"<th scope=\"col\" style=\"width: 20%\">프로젝트</th>"+
+										"<th scope=\"col\" style=\"width: 10%\">직원번호</th>"+
+										"<th scope=\"col\" style=\"width: 10%\">직원명</th>"+
+										"<th scope=\"col\" style=\"width: 20%\">출근시간</th>"+
+									"</tr>"+
+									"</thead>"+
+									"<tbody>";
+				
+				for(var i = 0; i < list.length; i++){
+					popupCtntHtml += "<tr>";
+					popupCtntHtml += "<td>"+list[i]['corpNm']+"</td>";
+					popupCtntHtml += "<td>"+list[i]['prjNm']+"</td>";
+					popupCtntHtml += "<td>"+list[i]['empNo']+"</td>";
+					popupCtntHtml += "<td>"+list[i]['empNm']+"</td>";
+					popupCtntHtml += "<td>"+list[i]['regTime']+"</td>";
+					popupCtntHtml += "</tr>";
+				}
+				popupCtntHtml += "</tbody></table></div>"+
+								"<div class=\"modal-footer\">"+
+									"<button type=\"button\" class=\"btn btn-danger\" data-bs-dismiss=\"modal\">Close</button>"+
+								"</div>";
+				console.log(popupCtntHtml);
+				$('#modalPopupContent').html(popupCtntHtml);
+				
+				//Modal Popup
+				$("#modalPopup").modal("show");
+			},
+			error : function(){
+				console.log("실패..");
+			},
+			complete : function(){
+				console.log("완료");
+			}
+		});
+	}
+		
+</script>
+</body>
+
+</html>

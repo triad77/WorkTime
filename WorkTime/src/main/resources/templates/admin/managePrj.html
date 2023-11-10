@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ADMIN :: KBDS 출퇴근관리</title>
+
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/media.css}">
+  <!-- // styles -->
+
+  <!-- script -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+
+</head>
+
+
+<script>
+
+  function openWindowPop(url, name){
+      var options = 'top=50%, left=50%, width=1200, height=400, status=no, menubar=no, toolbar=no, resizable=no';
+      window.open(url, name, options);
+  }
+
+  function removeCheck() {
+      if (confirm("정말 삭제하시겠습니까??") == true) { //확인
+        document.removefrm.submit();
+      } else { //취소
+        return false;
+      }
+    }
+
+    function searchPrj() {
+      const plodrCorp = document.getElementById('plodrCorp').value;
+      const statCd = document.getElementById('statCd').value;
+      const page = 0;
+      location.href='/admin/manage/prj?plodrCorp=' + plodrCorp + '&statCd=' + statCd + '&page=' + page;
+    }
+
+</script>
+
+<!-- body -->
+<body>
+  <div id="wrap">
+
+    <!-- header -->
+    <header class="">
+      <div class="navbar sticky-top head-cont d-flex justify-content-between align-items-center">
+        <h1><a href="/webadmin/page/sub_01_01.html" title="클릭시 home으로 이동">KBDS WORKTIME</a></h1>
+        <ul class="nav">
+          <li class="nav-item"><!--<a href="/webadmin/page/sub_08_03.html" class="nav-link">비밀번호변경</a>--></li>
+          <li class="nav-item"><!--<a href="/webadmin/index.html" class="nav-link">로그아웃</a>--></li>
+        </ul>
+      </div>
+
+      <nav id="gnb" class="gnb scroll">
+        <ul class="nav">
+          <li class="nav-item"><a href="/admin/search/byProject" class="nav-link">프로젝트별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byCorp" class="nav-link">소속회사별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byEmp" class="nav-link">직원별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/manage/emp" class="nav-link active">시스템관리</a></li>
+        </ul>
+      </nav>
+
+      <div class="sub-depth" data-toggle="class-toggle">
+        <ul class="nav mb-auto nav-fill">
+          <li class="nav-item"><a class="nav-link">소속회사관리</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/manage/prj">프로젝트관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/manage/emp">직원관리</a></li>
+        </ul>
+      </div> 
+    </header> 
+    <!-- // header -->
+
+    <!-- contents -->
+    <div class="contents">
+
+      <!-- page title -->
+      <div class="page-title d-flex justify-content-between align-items-end">
+        <h2 class="title">프로젝트관리</h2>
+        <nav class="breadcrumb-wrap" aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><i class="bi bi-house me-1"></i>Home</li>
+              <li class="breadcrumb-item">시스템관리</li>
+              <li class="breadcrumb-item active" aria-current="page">프로젝트관리</li>
+            </ol>
+        </nav>
+      </div> 
+      <!-- // page title -->
+
+      <div class="page-section">
+        <section class="sect">
+          <div class="search-wrap">
+
+            <!-- filter -->
+            <div class="filter-wrap d-flex align-items-end mb-2">
+              <div class="input-group input-group-sm w-auto">
+                <h3 class="h3-title"><i class="bi bi-search me-1"></i>조회</h3>
+              </div>
+              <div class="btn-wrap mt-4 d-flex ms-auto">
+                <button class="btn btn-dark" onclick="searchPrj()">조회</button>
+              </div>
+            </div>
+
+            <!-- // filter -->
+              <div class="table-responsive">
+              <table class="table row-table">
+                <colgroup>
+                  <col style="width:15%">
+                  <col>
+                  <col style="width:15%">
+                  <col>                
+                </colgroup>
+
+                <tbody>
+                  <tr>
+
+                    <th scope="row">발주회사</th>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <select id="plodrCorp" class="form-select w-auto" aria-label="발주회사 선택">
+                          <option value="00">전체</option>
+                          <option 
+                            th:each="corp : ${pCorpSelBox}" 
+                            th:value="${corp.code}" 
+                            th:text="${corp.value}"
+                            th:selected="${corp.code} == ${pCorpSel}"></option>
+                        </select>
+                      </div>
+                    </td>
+
+                    <th scope="row">진행상태</th>
+                    <td>
+                      <div class="d-flex align-items-center"> 
+                        <select id="stat" class="form-select w-auto" aria-label="진행상태 선택">
+                          <option value="0">전체</option>
+                          <option 
+                            th:each="stat : ${statSelBox}" 
+                            th:value="${stat.code}" 
+                            th:text="${stat.value}"
+                            th:selected="${stat.code} == ${selectedStat}"></option>
+                        </select>
+                      </div>
+                    </td>
+
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="sect">
+
+          <!-- filter -->
+          <div class="filter-wrap d-flex align-items-center mb-2">
+            <div class="input-group input-group-sm w-auto">
+              <h3 class="h3-title"><i class="bi bi-card-list me-1"></i>목록</h3>
+            </div>
+            <div class="buttons d-flex ms-auto">
+			        <a href="" class="btn btn-sm btn-secondary ms-1"><i class="bi bi-pencil-square me-1"></i>등록</a>	
+              <button type="button" class="btn btn-sm btn-secondary"><i class="bi bi-download me-1"></i>엑셀다운로드</button>
+            </div>
+          </div> <!-- // filter -->
+
+          <!-- table -->
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover text-center col-table">
+              <thead class="table-light">
+                <tr>
+                  <th scope="col">번호</th>
+                  <th scope="col">프로젝트명</th>
+                  <th scope="col">발주회사</th>
+                  <th scope="col">시작일자</th>
+                  <th scope="col">종료일자</th>
+                  <th scope="col">진행상태</th>
+                  <th scope="col">관리</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr th:each="dto, loop : ${paging}">
+                  <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+                  <td th:text="${dto.prjNm}"></td>
+                  <td th:text="${dto.plodrCorp.value}"></td>
+                  <td th:text="${#temporals.createDate(dto.startDt, 'yyyyMMdd')}"></td>
+                  <td th:text="${#temporals.createDate(dto.endDt,   'yyyyMMdd')}"></td>
+                  <td th:text="${dto.stat.value}"></td>
+                  <td>
+                    <div class="d-inline-flex align-items-center">
+                      <a href="" class="btn btn-sm btn-outline-danger ms-1" onclick="removeCheck()">삭제</a>
+                      <a href="" class="btn btn-sm btn-outline-secondary ms-1">관리</a>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+
+            </table>
+
+          </div> 
+          <!-- // table -->
+
+
+          <!-- 페이징처리 시작 -->
+          <div th:if="${!paging.isEmpty()}">
+          <nav class="pagination-wrap" aria-label="리스트 페이지 이동">
+            <ul class="pagination justify-content-center">
+
+              <!-- 이전 없을 때 .disabled -->
+              <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number-1}|}" aria-label="이전 페이지">
+                  <span aria-hidden="true"><i class="bi bi-chevron-double-left"></i></span>
+                </a>
+              </li>
+
+              <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+	            	th:if="${page >= paging.number-5 and page <= paging.number+5}"
+	                th:classappend="${page == paging.number} ? 'active'" 
+	                class="page-item">
+	                <a th:text="${page+1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+	            </li>
+
+              <!-- 다음 없을 때 .disabled -->
+              <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${paging.number+1}|}" aria-label="다음 페이지">
+                  <span aria-hidden="true"><i class="bi bi-chevron-double-right"></i></span>
+                </a>
+              </li>
+
+            </ul>
+          </nav>
+
+          </div> 
+          <!-- 페이징처리 끝 --> 
+
+        </section>
+      </div>
+    </div> 
+    <!-- // contents -->
+
+  </div> 
+  <!-- // body -->
+
+</body>
+
+
+</html>

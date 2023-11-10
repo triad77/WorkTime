@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ADMIN :: KBDS 출퇴근관리</title>
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/media.css}">
+  <!-- // styles -->
+  
+  <!-- script -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script th:src="@{/js/ui.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/datepicker.js}"></script>
+  <script th:src="@{/js/d3-5.8.2.min.js}"></script>
+  <script th:src="@{/js/c3.min.js}"></script>
+  <script th:src="@{/js/common.js}"></script> 
+</head>
+
+<body>
+
+  <!-- body -->
+  <div id="wrap">
+
+    <!-- header -->
+    <header class="">
+      <div class="navbar sticky-top head-cont d-flex justify-content-between align-items-center">
+        <h1><a href="/webadmin/page/sub_01_01.html" title="클릭시 home으로 이동">KBDS WORKTIME</a></h1>
+        <ul class="nav">
+          <li class="nav-item"><!--<a href="/webadmin/page/sub_08_03.html" class="nav-link">비밀번호변경</a>--></li>
+          <li class="nav-item"><!--<a href="/webadmin/index.html" class="nav-link">로그아웃</a>--></li>
+        </ul>
+      </div>
+
+      <nav id="gnb" class="gnb scroll">
+        <ul class="nav">
+          <li class="nav-item"><a href="/admin/search/byProject" class="nav-link">프로젝트별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byCorp" class="nav-link">소속회사별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byEmp" class="nav-link">직원별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/manage/emp" class="nav-link active">시스템관리</a></li>
+        </ul>
+      </nav>
+      <div class="sub-depth" data-toggle="class-toggle">
+        <ul class="nav mb-auto nav-fill">
+          <li class="nav-item"><a class="nav-link">소속회사관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/manage/prj">프로젝트관리</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/manage/emp">직원관리</a></li>
+        </ul>
+      </div> 
+      
+    </header> 
+    <!-- // header -->
+
+    <!-- contents -->
+    <div class="contents">
+      <!-- page title -->
+      <div class="page-title d-flex justify-content-between align-items-end">
+        <h2 class="title">직원관리</h2>
+        <nav class="breadcrumb-wrap" aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><i class="bi bi-house me-1"></i>Home</li>
+              <li class="breadcrumb-item">시스템관리</li>
+              <li class="breadcrumb-item active">직원관리</li>
+              <li class="breadcrumb-item active" aria-current="page">직원상세</li>
+            </ol>
+        </nav>
+      </div> 
+      <!-- // page title -->
+      
+      <div class="page-section">
+		  
+	    <section class="sect">
+	      <h3 class="h3-title"><i class="bi bi-person-circle me-1"></i>직원정보</h3>
+	      <div class="table-responsive">
+	      <table class="table row-table">
+	        <colgroup>
+	          <col style="width:15%">
+	          <col>
+	          <col style="width:15%">
+	          <col>
+	        </colgroup>
+	        <tbody>
+	          <tr>
+	            <th scope="row">직원번호</th>
+	            <td th:text="${emp.empNo}"></td>
+	            <th scope="row">직원명</th>
+	            <td th:text="${emp.empNm}"></td>
+	          </tr>
+	          <tr>
+	            <th scope="row">프로젝트</th>
+	            <td th:text="${emp.project.prjNm}"></td>
+	            <th scope="row">소속회사</th>
+	            <td th:text="${emp.corp.value}"></td>
+	          </tr>	          
+	          <tr>
+	            <th scope="row" >계약시작일</th>
+	            <td th:text="${#temporals.createDate(emp.ctrcStDate, 'yyyyMMdd')}"></td>
+	            <th scope="row">계약상태</th>
+	            <td id="ctrcStatus">
+					<span th:if="${#temporals.createDate(emp.ctrcStDate, 'yyyyMMdd').isAfter(#temporals.createToday())}" class="badge bg-point">대기</span>
+					<span th:if="${#temporals.createDate(emp.ctrcStDate, 'yyyyMMdd').isBefore(#temporals.createToday())} and ${#temporals.createDate(emp.ctrcEdDate, 'yyyyMMdd').isAfter(#temporals.createToday())}" class="badge bg-success">진행</span>
+					<span th:if="${#temporals.createDate(emp.ctrcEdDate, 'yyyyMMdd').isBefore(#temporals.createToday())}" class="badge bg-secondary">종료</span>
+	            </td>
+	          </tr>
+
+	          <tr>
+	            <th scope="row">휴대폰번호</th>
+	            <td th:text="${emp.contract}"></td>
+	            <th scope="row">IP주소</th>
+	            <td th:text="${emp.ipAddr}"></td>
+	          </tr>         
+	        </tbody>
+	      </table>
+	      </div>
+	    </div>
+	    <div class="btn-wrap mt-4 d-flex justify-content-center"></div>	      
+	    </section>
+	            
+	    <section class="sect">
+	      <h3 class="h3-title"><i class="bi bi-person-circle me-1"></i>철수등록</h3>
+	      <div class="table-responsive">
+	      <table class="table row-table">
+	        <colgroup>
+	          <col style="width:15%">
+	          <col>
+	        </colgroup>
+	        <tbody>
+	          <tr>
+	            <th scope="row">계약종료일</th>
+	            <td>
+	              <div class="d-flex align-items-center">
+                    <div class="datepicker">
+                      <input id="ctrcEndYmd" type="text" class="form-control" th:value="${#temporals.createDate(emp.ctrcEdDate, 'yyyyMMdd')}">
+                      <input id="befCtrcEndYmd" type="hidden" th:value="${#temporals.createDate(emp.ctrcEdDate, 'yyyyMMdd')}">
+                      <i class="bi bi-calendar2-check"></i>
+                    </div>
+	                <button type="button" class="btn btn-danger" th:attr="onclick=|modCtrcEndYmd('${emp.id}')|">종료일 수정</button>
+	              </div>	              
+	            </td>
+	          </tr>
+	        </tbody>
+	      </table>
+	    </div>
+      <div class="btn-wrap d-flex justify-content-center mt-4">
+        <a th:href="@{|/admin/manage/emp|}" class="btn btn-gray me-auto">목록</a>
+        <a th:href="@{|/admin/manage/empUpdate/${emp.id}|}" class="btn btn-dark">수정</a>
+        <button id="btnDelete" th:attr="onclick=|deleteEmp('${emp.id}')|" class="btn btn-danger ms-1">삭제</button>
+      </div>
+	    </section>
+      </div>
+    </div> <!-- // contents -->
+  </div> <!-- // body -->
+
+<script>
+	
+	$( function() {
+		$( "#ctrcEndYmd" ).datepicker({
+			todayHighlight: true,
+			container: '#ctrcEndYmd'
+		});
+		
+		$( "#ctrcEndYmd" ).on("focusout", function(event){
+			var strYmd=$(this).val();
+			if(strYmd.length==8){
+				var yyyy = strYmd.substring(0, 4);
+				var mm = strYmd.substring(4, 6);
+				var dd = strYmd.substring(6, 8);
+				$(this).val(yyyy+"-"+mm+"-"+dd);
+			}
+		});
+	} );
+
+	function modCtrcEndYmd(id) {
+
+		var ctrcEndYmd = $("#ctrcEndYmd").val();
+		
+		if(ctrcEndYmd == "") {
+			alert("계약종료일을 입력하세요");
+			return;
+		}
+		
+		if(ctrcEndYmd == $("#befCtrcEndYmd").val()) {
+			alert("계약종료일이 변경되지 않았습니다");
+			return;
+		}
+		
+		$.ajax({
+			type: 'PUT',
+			url: '/admin/manage/emp/endingCtrc/' + id + '/' + ctrcEndYmd,
+			contentType: "application/text; charset=UTF-8",
+			dataType: 'text',
+			success: function (result) {
+				alert("계약종료일이 변경되었습니다");
+				document.location.reload();
+			},
+			error : function(XHR, status, error) {
+				alert("계약종료일이 변경에 실패하였습니다");
+				console.error(status + " : " + error);
+			}
+		}).fail(function (error) {
+			alert(JSON.stringify(error));
+		})
+	}
+	
+	function getProject(plodrCorp, selectOption) {
+		$.ajax({
+			type: 'GET',
+			url: '/admin/getProject/' + plodrCorp,
+			contentType: "application/json; charset=UTF-8",
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+				$('#project').children('option:not(:first)').remove();
+				for (i = 0; i < result.length; i++) {
+					// 첫번째 옵션 '전체'를 삭제하면 안되므로
+					selectOption.options[i+1] = new Option(result[i].name, result[i].code);
+				}
+			}
+		}).fail(function (error) {
+			alert(JSON.stringify(error));
+		})
+	}
+
+	function deleteEmp(id) {
+		if (confirm("[주의]삭제는 해당 직원의 출퇴근 기록까지 모두 삭제됩니다\n계약이 종료되었다면 '철수'기능을 이용하시기 바랍니다\n\n정말 삭제하시겠습니까??") == true) {
+			location.href='/admin/manage/empDelete/'+id;
+		}
+		else {
+			return false;
+		}
+	}
+</script> 
+</body>
+
+</html>

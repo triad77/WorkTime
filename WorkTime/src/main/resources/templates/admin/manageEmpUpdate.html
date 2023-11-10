@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html  lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>ADMIN :: KBDS 출퇴근관리</title>
+  <!-- styles -->
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/app.css}">
+  <link rel="stylesheet" type="text/css" th:href="@{/css/media.css}">
+  <!-- // styles -->
+
+  <!-- script -->
+  <script th:src="@{/js/jquery-3.7.1.min.js}"></script>
+  <script th:src="@{/js/ui.min.js}"></script>
+  <script th:src="@{/js/bootstrap.min.js}"></script>
+  <script th:src="@{/js/datepicker.js}"></script>
+  <script th:src="@{/js/d3-5.8.2.min.js}"></script>
+  <script th:src="@{/js/c3.min.js}"></script>
+  <script th:src="@{/js/common.js}"></script>
+</head>
+
+<body>
+
+  <!-- body -->
+  <div id="wrap">
+
+    <!-- header -->
+    <header class="">
+      <div class="navbar sticky-top head-cont d-flex justify-content-between align-items-center">
+        <h1><a href="/webadmin/page/sub_01_01.html" title="클릭시 home으로 이동">KBDS WORKTIME</a></h1>
+        <ul class="nav">
+          <li class="nav-item"><!--<a href="/webadmin/page/sub_08_03.html" class="nav-link">비밀번호변경</a>--></li>
+          <li class="nav-item"><!--<a href="/webadmin/index.html" class="nav-link">로그아웃</a>--></li>
+        </ul>
+      </div>
+
+      <nav id="gnb" class="gnb scroll">
+        <ul class="nav">
+          <li class="nav-item"><a href="/admin/search/byProject" class="nav-link">프로젝트별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byCorp" class="nav-link">소속회사별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/search/byEmp" class="nav-link">직원별 출퇴근현황 조회</a></li>
+          <li class="nav-item"><a href="/admin/manage/emp" class="nav-link active">시스템관리</a></li>
+        </ul>
+      </nav>
+      <div class="sub-depth" data-toggle="class-toggle">
+        <ul class="nav mb-auto nav-fill">
+          <li class="nav-item"><a class="nav-link">소속회사관리</a></li>
+          <li class="nav-item"><a class="nav-link" href="/admin/manage/prj">프로젝트관리</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="/admin/manage/emp">직원관리</a></li>
+        </ul>
+      </div> 
+      
+    </header> 
+    <!-- // header -->
+
+    <!-- contents -->
+    <div class="contents">
+      <!-- page title -->
+      <div class="page-title d-flex justify-content-between align-items-end">
+        <h2 class="title">직원수정</h2>
+        <nav class="breadcrumb-wrap" aria-label="breadcrumb">
+            <ol class="breadcrumb m-0">
+              <li class="breadcrumb-item"><i class="bi bi-house me-1"></i>Home</li>
+              <li class="breadcrumb-item">시스템관리</li>
+              <li class="breadcrumb-item active">직원관리</li>
+              <li class="breadcrumb-item active" aria-current="page">직원수정</li>
+            </ol>
+        </nav>
+      </div> 
+      <!-- // page title -->
+      
+      <div class="member-wrap">
+		  
+	    <section class="sect">
+			
+		    <div class="table-responsive">
+				<form id="uptForm" th:action="@{|/admin/manage/empUpdate|}" th:object="${form}" method="post">
+			      <input id="id" type="hidden" th:field="*{id}">
+			      <div th:replace="~{/form_errors :: formErrorsFragment}"></div>
+			      <table class="table row-table">
+			        <colgroup>
+			          <col style="width:15%">
+			          <col>
+			        </colgroup>
+			        <tbody>
+			          <tr>
+			            <th scope="row">직원번호</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+			                <input type="text" class="form-control w-50" placeholder="직원번호 7자리를 입력해 주세요" th:field="*{empNo}" id="empNo" value="" readonly>
+			              </div>
+			            </td>
+			          </tr>
+			          
+			          <tr>
+			            <th scope="row">이 름</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+			                <input type="text" class="form-control w-50" placeholder="직원명을 입력해 주세요" th:field="*{empNm}" id="empNm" value="">
+			              </div>
+			            </td>
+			          </tr>
+			          
+			          <tr>
+			            <th scope="row">연락처</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+			                <input type="text" class="form-control w-50" placeholder="휴대폰 010-0000-0000" th:field="*{contract}" id="contract" value="">
+			              </div>
+			            </td>
+			          </tr>
+			          
+			          <tr>
+			            <th scope="row">IP주소</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+			                <input type="text" class="form-control w-50" placeholder="000.000.000.000" th:field="*{ipAddr}" id="ipAddr" value="">
+			              </div>
+			            </td>
+			          </tr>
+			          			          
+			          <tr>
+			            <th scope="row">소속회사</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+	                      <select th:field="*{belngCorp}" id="belngCorp" class="form-select w-auto" aria-label="소속회사 선택">
+	                        <option 
+	                          th:each="corp : ${bCorpSelBox}" 
+	                          th:value="${corp.code}" 
+	                          th:text="${corp.value}"
+	                          th:selected="${corp.code} == ${bCorpSel}"></option>
+	                      </select>
+			              </div>
+			            </td>
+			          </tr>	
+			          
+			          <tr>
+			            <th scope="row">참여프로젝트</th>
+			            <td>
+			              <div class="d-flex align-items-center">
+	                      <select id="plodrCorp" class="form-select w-auto" aria-label="발주회사 선택" onchange="getProject(plodrCorp.value, project)">
+	                        <option 
+	                          th:each="corp : ${pCorpSelBox}" 
+	                          th:value="${corp.code}" 
+	                          th:text="${corp.value}"
+	                          th:selected="${corp.code} == ${pCorpSel}"></option>
+	                      </select>
+	                      <select th:field="*{prjId}" id="project" class="form-select w-auto" aria-label="프로젝트 선택">
+	                        <option 
+	                          th:each="prj : ${prjSelBox}" 
+	                          th:value="${prj.prjId}" 
+	                          th:text="${prj.prjNm}"
+	                          th:selected="${prj.prjId} == ${prjSel}"></option>
+	                      </select>
+			              </div>
+			            </td>
+			          </tr>	
+			          
+			          <tr>
+			            <th scope="row">계약시작일자</th>
+			            <td>
+		                    <div class="d-flex align-items-center">
+		                      <div class="datepicker">
+		                        <input id="ctrcStDate" th:field="*{ctrcStDate}" type="hidden">
+		                        <input id="tmpCtrcStDate" th:value="${#temporals.createDate(form.ctrcStDate, 'yyyyMMdd')}" type="text" class="form-control">
+		                        <i class="bi bi-calendar2-check"></i>
+		                      </div>
+		                    </div> 
+			            </td>
+			          </tr>
+			        </tbody>
+			      </table>
+				  <div class="btn-wrap mt-4 d-flex justify-content-center">
+		  			<a class="btn btn-secondary" onclick="history.back(-1);">취소</a>
+	 				<button id="btnRegist" class="btn btn-dark ms-2">저장</button>
+	  			  </div>
+			    </form>
+		    </div>	
+
+	    </section>
+      </div>
+    </div> <!-- // contents -->
+  </div> <!-- // body -->
+  
+<script>
+	
+	$( function() {
+		$( "#ctrcStDate" ).datepicker();
+	} );
+	
+	$('#btnRegist').click(function () {
+		$('#ctrcStDate').val($('#tmpCtrcStDate').val().replace(/-/gi, ""));
+		$("#uptForm").submit();
+	});
+		
+	function getProject(plodrCorp, selectOption) {
+		$.ajax({
+			type: 'GET',
+			url: '/admin/getProject/' + plodrCorp,
+			contentType: "application/json; charset=UTF-8",
+			dataType: 'json',
+			success: function (result) {
+				console.log(result);
+				$('#project').children('option:not(:first)').remove();
+				for (i = 0; i < result.length; i++) {
+					// 첫번째 옵션 '전체'를 삭제하면 안되므로
+					selectOption.options[i+1] = new Option(result[i].name, result[i].code);
+				}
+			}
+		}).fail(function (error) {
+			alert(JSON.stringify(error));
+		})
+	}
+
+
+</script> 
+</body>
+
+</html>

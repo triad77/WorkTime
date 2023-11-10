@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}">
+    <!-- work time CSS -->
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    
+    <title>출퇴근 등록</title>
+</head>
+<body>
+<!-- 기본 템플릿 안에 삽입될 내용 Start -->
+<div class="container my-3">
+
+	<input type="hidden" id="empNo" th:value="${empNo}"/>
+	<section class="sect">
+		<div class="sub-title-wrap d-flex justify-content-center">
+			<h3 class="sub-title mb-20">출퇴근 등록</h3>
+		</div>
+		<div class="mb-3 d-flex justify-content-center">
+			<a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" onclick="goRegist()">출근등록</a>
+			&nbsp;&nbsp;&nbsp;
+			<a class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">퇴근등록</a>
+		</div>
+	</section>
+                
+</div>
+
+<!-- 기본 템플릿 안에 삽입될 내용 End -->
+
+<script>
+    // SESSION ID 를 생성해주는 함수다.
+    const generateRandomString = (num) => {
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        let result = '';
+        const charactersLength = characters.length;
+        for (let i = 0; i < num; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+	
+    let randomChar = generateRandomString(10)// sessionId 생성
+	function goRegist() {
+		location.href="/sWorkTimeReg?empNo="+ document.getElementById("empNo").value + "&sessionId="+randomChar;
+	}
+</script>
+
+<!-- Bootstrap JS -->
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>
